@@ -87,7 +87,7 @@ Setiap file `.mat` yang dihasilkan memiliki struktur atribut sebagai berikut:
 | **3** | Alphabet letters-1A | 25-26 | 42 | 20 (47.6%) | 17 | 2 |
 | **4** | Alphabet letters-1B | 27-28 | 42 | 20 (47.6%) | 17 | 2 |
 | **5** | Alphabet letters-2 | 29-32 | 84 | 40 (47.6%) | 35 | 4 |
-| **2-5** | Combined | 21-32 | 252 | 120 (47.6%) | 107 | 12 |
+| **2-5** | Combined (Stratified) | 21-32 | 252 | 120 (47.6%) | 107 | 12 |
 
 ### 🎯 Karakteristik Data
 
@@ -96,6 +96,21 @@ Setiap file `.mat` yang dihasilkan memiliki struktur atribut sebagai berikut:
 - **Range Stimulus**: Dinormalisasi ke [0.0, 1.0]
 - **Filtering**: Homogeneous stimuli (abu-abu polos) telah dihapus
 - **Format**: MATLAB `.mat` files yang kompatibel dengan scipy.io
+
+### 🎲 Stratified Sampling untuk Dataset Combined
+
+Dataset `miyawaki_conditions_2to5_combined_sharp.mat` menggunakan **stratified sampling** untuk memastikan distribusi test set yang seimbang:
+
+- **Test Set Distribution**: 3 samples dari setiap kondisi (2, 3, 4, 5)
+- **Train Set Distribution**: Sisa samples dari setiap kondisi
+- **Metode**: Stratified split berdasarkan kondisi untuk menghindari bias
+- **Label**: Menggunakan nomor kondisi (2, 3, 4, 5) sebagai label
+
+#### Distribusi Final Combined Dataset:
+| Set | Condition 2 | Condition 3 | Condition 4 | Condition 5 | Total |
+|-----|-------------|-------------|-------------|-------------|-------|
+| **Train** | 37 samples | 16 samples | 17 samples | 37 samples | 107 |
+| **Test** | 3 samples | 3 samples | 3 samples | 3 samples | 12 |
 
 ## 📋 Persyaratan
 

@@ -299,7 +299,8 @@ def create_combined_conditions_2to5(input_file, output_file,
     fmri_standardized = (fmri_final - fmri_mean) / fmri_std
     fmri_standardized = np.nan_to_num(fmri_standardized)
     
-    labels_processed = session_final.reshape(-1, 1)
+    # Use condition numbers as labels instead of session numbers
+    labels_processed = condition_final.reshape(-1, 1)
     
     # Adjust target sizes if needed
     total_needed = target_train_size + target_test_size
@@ -308,23 +309,72 @@ def create_combined_conditions_2to5(input_file, output_file,
         target_train_size = int(target_train_size * ratio)
         target_test_size = int(target_test_size * ratio)
     
-    # Split data
+    # Stratified split by condition to ensure balanced test set
+    print(f"\n✂️  Creating stratified split by condition...")
     np.random.seed(42)
-    total_samples = fmri_standardized.shape[0]
-    indices = np.random.permutation(total_samples)
-    
-    train_indices = indices[:target_train_size]
-    test_indices = indices[target_train_size:target_train_size + target_test_size]
+
+    # Calculate samples per condition for test set
+    unique_conditions = np.unique(condition_final)
+    n_conditions = len(unique_conditions)
+    test_per_condition = target_test_size // n_conditions
+    remaining_test = target_test_size % n_conditions
+
+    print(f"📊 Test set distribution strategy:")
+    print(f"   Target test size: {target_test_size}")
+    print(f"   Conditions: {unique_conditions}")
+    print(f"   Base samples per condition: {test_per_condition}")
+    print(f"   Extra samples to distribute: {remaining_test}")
+
+    train_indices = []
+    test_indices = []
+
+    for i, condition in enumerate(unique_conditions):
+        condition_mask = condition_final == condition
+        condition_indices = np.where(condition_mask)[0]
+
+        # Calculate test samples for this condition
+        test_samples_this_condition = test_per_condition
+        if i < remaining_test:  # Distribute remaining samples to first conditions
+            test_samples_this_condition += 1
+
+        print(f"   Condition {condition}: {len(condition_indices)} total → {test_samples_this_condition} test")
+
+        # Randomly select test samples for this condition
+        np.random.shuffle(condition_indices)
+        condition_test_indices = condition_indices[:test_samples_this_condition]
+        condition_train_indices = condition_indices[test_samples_this_condition:]
+
+        test_indices.extend(condition_test_indices)
+        train_indices.extend(condition_train_indices)
+
+    # Convert to numpy arrays
+    train_indices = np.array(train_indices)
+    test_indices = np.array(test_indices)
+
+    # Adjust train size if needed
+    if len(train_indices) > target_train_size:
+        np.random.shuffle(train_indices)
+        train_indices = train_indices[:target_train_size]
+
+    print(f"✅ Final split:")
+    print(f"   Train samples: {len(train_indices)}")
+    print(f"   Test samples: {len(test_indices)}")
+
+    # Verify test set distribution
+    test_conditions = condition_final[test_indices]
+    for condition in unique_conditions:
+        count = np.sum(test_conditions == condition)
+        print(f"   Test condition {condition}: {count} samples")
     
     # Extract final data
     stimTrn = stimuli_processed[train_indices]
     fmriTrn = fmri_standardized[train_indices]
     labelTrn = labels_processed[train_indices]
-    
+
     stimTest = stimuli_processed[test_indices]
     fmriTest = fmri_standardized[test_indices]
     labelTest = labels_processed[test_indices]
-    
+
     print(f"\n🎯 FINAL COMBINED DATASET:")
     print(f"✅ fmriTrn: {fmriTrn.shape}")
     print(f"✅ stimTrn: {stimTrn.shape}")
@@ -332,6 +382,21 @@ def create_combined_conditions_2to5(input_file, output_file,
     print(f"✅ stimTest: {stimTest.shape}")
     print(f"✅ labelTrn: {labelTrn.shape}")
     print(f"✅ labelTest: {labelTest.shape}")
+
+    # Show final condition distribution
+    print(f"\n📊 Final condition distribution:")
+    train_conditions = labelTrn.flatten()
+    test_conditions = labelTest.flatten()
+
+    print(f"   Training set:")
+    for condition in unique_conditions:
+        count = np.sum(train_conditions == condition)
+        print(f"     Condition {condition}: {count} samples")
+
+    print(f"   Test set:")
+    for condition in unique_conditions:
+        count = np.sum(test_conditions == condition)
+        print(f"     Condition {condition}: {count} samples")
     
     # Save dataset
     output_data = {
@@ -350,7 +415,12 @@ def create_combined_conditions_2to5(input_file, output_file,
             'original_samples': len(pixel_values),
             'filtered_samples': len(pixel_values_filtered),
             'threshold_variance': threshold_variance,
-            'threshold_range': threshold_range
+            'threshold_range': threshold_range,
+            'split_method': 'stratified_by_condition',
+            'test_distribution': {int(cond): int(np.sum(labelTest.flatten() == cond))
+                               for cond in unique_conditions},
+            'train_distribution': {int(cond): int(np.sum(labelTrn.flatten() == cond))
+                                 for cond in unique_conditions}
         }
     }
     
