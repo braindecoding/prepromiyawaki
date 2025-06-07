@@ -53,6 +53,50 @@ miyawaki_condition5_alphabet_2_sharp.mat
 miyawaki_conditions_2to5_combined_sharp.mat
 ```
 
+### 📋 Struktur Atribut Output Files
+
+Setiap file `.mat` yang dihasilkan memiliki struktur atribut sebagai berikut:
+
+#### 🔹 File Individual (Condition 2, 3, 4, 5)
+
+| Atribut | Dimensi | Deskripsi |
+|---------|---------|-----------|
+| `fmriTrn` | (n_train, 967) | Data fMRI training yang telah distandarisasi |
+| `stimTrn` | (n_train, 784) | Stimulus training (28x28 pixels, flattened) |
+| `fmriTest` | (n_test, 967) | Data fMRI testing yang telah distandarisasi |
+| `stimTest` | (n_test, 784) | Stimulus testing (28x28 pixels, flattened) |
+| `labelTrn` | (n_train, 1) | Label kondisi untuk training data |
+| `labelTest` | (n_test, 1) | Label kondisi untuk testing data |
+
+#### 🔹 File Combined (Conditions 2-5)
+
+| Atribut | Dimensi | Deskripsi |
+|---------|---------|-----------|
+| `fmriTrn` | (107, 967) | Data fMRI training gabungan semua kondisi |
+| `stimTrn` | (107, 784) | Stimulus training gabungan (28x28 pixels, flattened) |
+| `fmriTest` | (12, 967) | Data fMRI testing gabungan semua kondisi |
+| `stimTest` | (12, 784) | Stimulus testing gabungan (28x28 pixels, flattened) |
+| `labelTrn` | (107, 1) | Label kondisi untuk training data (2, 3, 4, atau 5) |
+| `labelTest` | (12, 1) | Label kondisi untuk testing data (2, 3, 4, atau 5) |
+
+### 📊 Detail Ukuran Dataset per Kondisi
+
+| Kondisi | Deskripsi | Sessions | Original Trials | Filtered Trials | Train | Test |
+|---------|-----------|----------|----------------|----------------|-------|------|
+| **2** | Geometrical figures | 21-24 | 84 | 40 (47.6%) | 35 | 4 |
+| **3** | Alphabet letters-1A | 25-26 | 42 | 20 (47.6%) | 17 | 2 |
+| **4** | Alphabet letters-1B | 27-28 | 42 | 20 (47.6%) | 17 | 2 |
+| **5** | Alphabet letters-2 | 29-32 | 84 | 40 (47.6%) | 35 | 4 |
+| **2-5** | Combined | 21-32 | 252 | 120 (47.6%) | 107 | 12 |
+
+### 🎯 Karakteristik Data
+
+- **fMRI Data**: 967 voxels dari area V1, telah distandarisasi
+- **Stimulus**: Diubah dari 10x10 ke 28x28 pixels menggunakan sharp integer scaling
+- **Range Stimulus**: Dinormalisasi ke [0.0, 1.0]
+- **Filtering**: Homogeneous stimuli (abu-abu polos) telah dihapus
+- **Format**: MATLAB `.mat` files yang kompatibel dengan scipy.io
+
 ## 📋 Persyaratan
 
 ### File yang Diperlukan
