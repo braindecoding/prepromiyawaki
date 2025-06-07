@@ -1,0 +1,53 @@
+
+=== MIYAWAKI DATASET CONTENT DESCRIPTION ===
+
+FILE 1: miyawaki_random_28x28.mat
+Content: Random Images (Condition 1)
+- Sessions: 1-20 (Labels: 1-20)
+- Stimulus Type: Random 10x10 pixel patterns
+- Characteristics:
+  * High variability
+  * No structured patterns
+  * Good for general visual processing
+  * Suitable for basic reconstruction tasks
+  * Labels represent session numbers (1-20)
+
+FILE 2: miyawaki_structured_28x28.mat
+Content: Geometrical + Alphabet (Conditions 2-5)
+- Condition 2: Geometrical figures (Sessions 21-24, Labels: 21-24)
+  * 7 unique geometric shapes
+  * Structured patterns
+  * Clear boundaries
+
+- Condition 3: Alphabet letters-1A (Sessions 25-26, Labels: 25-26)
+  * 7 unique letter patterns
+  * Text-like stimuli
+  * High contrast
+
+- Condition 4: Alphabet letters-1B (Sessions 27-28, Labels: 27-28)
+  * 7 unique letter patterns
+  * Different font/style
+  * Text-like stimuli
+
+- Condition 5: Alphabet letters-2 (Sessions 29-32, Labels: 29-32)
+  * 7 unique letter patterns
+  * Another font/style variant
+  * Text-like stimuli
+
+USAGE RECOMMENDATIONS:
+
+Random Images File:
+- Use for: Basic VAE training, general reconstruction
+- Advantages: Large dataset (810 training samples)
+- Challenges: High variability, less structured
+
+Structured Images File:
+- Use for: Specific pattern recognition, structured learning
+- Advantages: Clear categories, structured patterns
+- Challenges: Smaller dataset (226 training samples), multiple conditions
+
+EXPERIMENTAL DESIGN:
+- Train on Random → Test on Structured (generalization)
+- Train on Structured → Test on Random (robustness)
+- Train on both → Compare performance
+- Condition-specific analysis within Structured file
